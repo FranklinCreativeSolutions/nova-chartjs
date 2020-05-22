@@ -34,6 +34,7 @@
     },
     created() {
       Nova.$on("change", () => this.fetch());
+      Nova.$on("change", () => console.log('change'));
     },
     data () {
       this.card.options = this.card.options != undefined ? this.card.options : false;
