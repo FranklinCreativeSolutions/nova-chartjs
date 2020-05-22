@@ -32,6 +32,9 @@
     components: {
       LineChart
     },
+    created() {
+      Nova.$on("action-executed", () => this.fetch());
+    },
     data () {
       this.card.options = this.card.options != undefined ? this.card.options : false;
       
