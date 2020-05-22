@@ -12,7 +12,7 @@ export default {
       required: true
     },
     height: {
-      default: 120,
+      default: 380,
       type: Number
     }
   },
