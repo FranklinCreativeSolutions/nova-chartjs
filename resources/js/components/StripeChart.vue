@@ -35,6 +35,7 @@
     created() {
       Nova.$on("change", () => this.fetch());
       Nova.$on("change", () => console.log('change'));
+      console.log('created');
     },
     data () {
       this.card.options = this.card.options != undefined ? this.card.options : false;
