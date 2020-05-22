@@ -1,24 +1,24 @@
 <template>
-    <card class="p-10">
-      <div class="stay-right">
-        <a @click="fillData()" class="btn-refresh" v-show="buttonRefresh">
-          <i class="fas fa-sync"></i>
-        </a>
-        <a @click="reloadPage()" class="btn-refresh" v-show="buttonReload">
-          <i class="fas fa-sync"></i>
-        </a>
-        <a :href="externalLink" :target="externalLinkIn" class="btn-external" v-show="btnExtLink">
-          <i class="fas fa-external-link-alt"></i>
-        </a>
-        <select @change="fillData()" v-model="advanceFilterSelected" v-show="showAdvanceFilter" class="select-box-sm ml-auto min-w-24 h-6 text-xs appearance-none bg-40 pl-2 pr-6 active:outline-none active:shadow-outline focus:outline-none focus:shadow-outline">
-          <option v-for="filter in advanceFilter" v-bind:value="filter.value" :key="filter.key">
-            {{ filter.text }}
-          </option>
-        </select>
-      </div>
-      <h4 class="chart-js-dashboard-title">{{ checkTitle }}</h4>
-      <line-chart :chart-data="datacollection" :options="options"></line-chart>
-    </card>
+  <card class="p-10">
+    <div class="stay-right">
+      <a @click="fillData()" class="btn-refresh" v-show="buttonRefresh">
+        <i class="fas fa-sync"></i>
+      </a>
+      <a @click="reloadPage()" class="btn-refresh" v-show="buttonReload">
+        <i class="fas fa-sync"></i>
+      </a>
+      <a :href="externalLink" :target="externalLinkIn" class="btn-external" v-show="btnExtLink">
+        <i class="fas fa-external-link-alt"></i>
+      </a>
+      <select @change="fillData()" v-model="advanceFilterSelected" v-show="showAdvanceFilter" class="select-box-sm ml-auto min-w-24 h-6 text-xs appearance-none bg-40 pl-2 pr-6 active:outline-none active:shadow-outline focus:outline-none focus:shadow-outline">
+        <option v-for="filter in advanceFilter" v-bind:value="filter.value" :key="filter.key">
+          {{ filter.text }}
+        </option>
+      </select>
+    </div>
+    <h4 class="chart-js-dashboard-title">{{ checkTitle }}</h4>
+    <line-chart :chart-data="datacollection" :options="options"></line-chart>
+  </card>
 </template>
 
 <style>
@@ -34,7 +34,7 @@
     },
     data () {
       this.card.options = this.card.options != undefined ? this.card.options : false;
-      
+
       // setup btn filter list
       const btnFilterList = this.card.options.btnFilterList;
       let filledAdvancedList = [];
@@ -44,7 +44,7 @@
         filledAdvancedList[i] = {value: index, text: btnFilterList[index]};
         i++;
       }
-      
+
       return {
         datacollection: {},
         options: {},
@@ -56,23 +56,23 @@
         chartTooltips: this.card.options.tooltips != undefined ? this.card.options.tooltips : undefined,
         sweetAlert: this.card.options.sweetAlert2 != undefined ? this.card.options.sweetAlert2 : undefined,
         chartLayout: this.card.options.layout != undefined ? this.card.options.layout :
-          {
-            padding: {
-              left: 20,
-              right: 20,
-              top: 0,
-              bottom: 10
-            }
-          },
+                {
+                  padding: {
+                    left: 20,
+                    right: 20,
+                    top: 0,
+                    bottom: 10
+                  }
+                },
         chartLegend: this.card.options.legend != undefined ? this.card.options.legend :
-          {
-            display: true,
-            position: 'left',
-            labels: {
-                fontColor: '#7c858e',
-                fontFamily: "'Nunito'"
-            }
-          },
+                {
+                  display: true,
+                  position: 'left',
+                  labels: {
+                    fontColor: '#7c858e',
+                    fontFamily: "'Nunito'"
+                  }
+                },
         showAdvanceFilter: this.card.model == 'custom' || this.card.model == undefined ? false : this.card.options.btnFilter == true ? true : false ,
         advanceFilterSelected: this.card.options.btnFilterDefault != undefined ? this.card.options.btnFilterDefault : 'QTD',
         advanceFilter: this.card.options.btnFilterList != undefined ? filledAdvancedList : [
@@ -91,12 +91,12 @@
       }
     },
     props: [
-        'card'
+      'card'
     ],
     created(){
+      let self = this;
       Nova.$on("resources-loaded", function(){
-        this.fillData();
-        console.log('even triggered');
+        self.fillData();
       });
     },
     mounted () {
@@ -151,7 +151,7 @@
               }
             }
           }
-          
+
           if(this.chartTooltips.callbacks !== undefined){
             const callbacklist = ["beforeTitle", "title", "afterTitle", "beforeBody", "beforeLabel", "label", "labelColor", "labelTextColor", "afterLabel", "afterBody", "beforeFooter", "footer", "afterFooter"];
             var i;
@@ -166,77 +166,25 @@
         }
 
         if(this.card.model == 'custom' || this.card.model == undefined){
-          console.log('custom');
-        // Custom Data
-          this.title = this.card.title,
-          this.datacollection = {
-            labels: this.card.options.xaxis.categories,
-            datasets: this.card.series,
-          }
+          // Custom Data
+          this.title = this.card.title;
+          let url = '/nova-api/'+this.card.options.path+'/cards?path='+encodeURI(window.location.href).replace('&','%26');
+          fetch(url)
+                  .then(res => res.json())
+                  .then(res => {
+                    this.datacollection = {
+                      labels: res[0].options.xaxis.categories,
+                      datasets: res[0].series,
+                    };
+                  });
 
           // START == SETUP POPUP
           const sweetAlertWithLink = this.sweetAlert;
           if(sweetAlertWithLink != undefined) {
             this.options.onClick = function (event) {
               let element = this.getElementAtEvent(event);
-              console.log(element);
               if (element.length > 0) {
                 console.log(element[0]._model);
-              var series= element[0]._model.datasetLabel;
-              var label = element[0]._model.label;
-              var value = this.data.datasets[element[0]._datasetIndex].data[element[0]._index];
-
-              const toLink = sweetAlertWithLink.linkTo != undefined ? sweetAlertWithLink.linkTo : "https://coroo.github.io/nova-chartjs/";
-              const { linkTo, ...sweetAlert } = sweetAlertWithLink;
-              
-              const Swal = require('sweetalert2')
-              Swal.fire({
-                title: sweetAlert.title != undefined ? sweetAlert.title : '<strong>'+value+'</strong>',
-                icon: sweetAlert.icon != undefined ? sweetAlert.icon : 'info',
-                html: sweetAlert.html != undefined ? sweetAlert.html : series == undefined ? 'You can see detail by click below button:' : '<b>' + series + '</b> in '+label+'<br/> ',
-                showCloseButton: sweetAlert.showCloseButton != undefined ? sweetAlert.showCloseButton : true,
-                showCancelButton: sweetAlert.showCancelButton != undefined ? sweetAlert.showCancelButton : true,
-                focusConfirm: sweetAlert.focusConfirm != undefined ? sweetAlert.focusConfirm : false,
-                confirmButtonText: sweetAlert.confirmButtonText != undefined ? sweetAlert.confirmButtonText : '<i class="fas fa-external-link-alt"></i> See Detail',
-                confirmButtonAriaLabel: sweetAlert.confirmButtonAriaLabel != undefined ? sweetAlert.confirmButtonAriaLabel : 'See Detail',
-                cancelButtonAriaLabel: sweetAlert.cancelButtonAriaLabel != undefined ? sweetAlert.cancelButtonAriaLabel : 'Cancel',
-                footer: sweetAlert.footer != undefined ? sweetAlert.footer : '<a href="https://coroo.github.io/nova-chartjs/" target="_blank" style="text-decoration:none; color:#777; font-size:14px">Nova Chart JS © ' + new Date().getFullYear() + '</a>',
-                ...sweetAlert
-              }).then((result) => {
-                if (result.value) {
-                  window.location = toLink;
-                }
-              })}
-            };
-          };
-          // END == SETUP POPUP
-
-        } else {
-          if(this.showAdvanceFilter == true) this.card.options.advanceFilterSelected = this.advanceFilterSelected != undefined ? this.advanceFilterSelected : false;
-          console.log('model');
-          // Use Model
-          Nova.request().get("/coroowicaksono/check-data/endpoint/", {
-            params: {
-                model: this.card.model,
-                series: this.card.series,
-                options: this.card.options,
-                join: this.card.join,
-                expires: 0,
-            },
-          })
-          .then(({ data }) => {
-            this.datacollection = {
-              labels: data.dataset.xAxis,
-              datasets: data.dataset.yAxis,
-            };
-
-            // START == SETUP POPUP
-            const sweetAlertWithLink = this.sweetAlert;
-            if(sweetAlertWithLink != undefined) {
-              this.options.onClick = function (event) {
-                let element = this.getElementAtEvent(event);
-                console.log(element[0]);
-                if (element.length > 0) {
                 var series= element[0]._model.datasetLabel;
                 var label = element[0]._model.label;
                 var value = this.data.datasets[element[0]._datasetIndex].data[element[0]._index];
@@ -262,14 +210,68 @@
                     window.location = toLink;
                   }
                 })}
-              };
             };
-            // END == SETUP POPUP
-            
+          };
+          // END == SETUP POPUP
+
+        } else {
+          if(this.showAdvanceFilter == true) this.card.options.advanceFilterSelected = this.advanceFilterSelected != undefined ? this.advanceFilterSelected : false;
+          // Use Model
+          Nova.request().get("/coroowicaksono/check-data/endpoint/", {
+            params: {
+              model: this.card.model,
+              series: this.card.series,
+              options: this.card.options,
+              join: this.card.join,
+              expires: 0,
+            },
           })
-          .catch(({ response }) => {
-            this.$set(this, "errors", response.data.errors)
-          })
+                  .then(({ data }) => {
+                    this.datacollection = {
+                      labels: data.dataset.xAxis,
+                      datasets: data.dataset.yAxis,
+                    };
+
+                    // START == SETUP POPUP
+                    const sweetAlertWithLink = this.sweetAlert;
+                    if(sweetAlertWithLink != undefined) {
+                      this.options.onClick = function (event) {
+                        let element = this.getElementAtEvent(event);
+                        console.log(element[0]);
+                        if (element.length > 0) {
+                          var series= element[0]._model.datasetLabel;
+                          var label = element[0]._model.label;
+                          var value = this.data.datasets[element[0]._datasetIndex].data[element[0]._index];
+
+                          const toLink = sweetAlertWithLink.linkTo != undefined ? sweetAlertWithLink.linkTo : "https://coroo.github.io/nova-chartjs/";
+                          const { linkTo, ...sweetAlert } = sweetAlertWithLink;
+
+                          const Swal = require('sweetalert2')
+                          Swal.fire({
+                            title: sweetAlert.title != undefined ? sweetAlert.title : '<strong>'+value+'</strong>',
+                            icon: sweetAlert.icon != undefined ? sweetAlert.icon : 'info',
+                            html: sweetAlert.html != undefined ? sweetAlert.html : series == undefined ? 'You can see detail by click below button:' : '<b>' + series + '</b> in '+label+'<br/> ',
+                            showCloseButton: sweetAlert.showCloseButton != undefined ? sweetAlert.showCloseButton : true,
+                            showCancelButton: sweetAlert.showCancelButton != undefined ? sweetAlert.showCancelButton : true,
+                            focusConfirm: sweetAlert.focusConfirm != undefined ? sweetAlert.focusConfirm : false,
+                            confirmButtonText: sweetAlert.confirmButtonText != undefined ? sweetAlert.confirmButtonText : '<i class="fas fa-external-link-alt"></i> See Detail',
+                            confirmButtonAriaLabel: sweetAlert.confirmButtonAriaLabel != undefined ? sweetAlert.confirmButtonAriaLabel : 'See Detail',
+                            cancelButtonAriaLabel: sweetAlert.cancelButtonAriaLabel != undefined ? sweetAlert.cancelButtonAriaLabel : 'Cancel',
+                            footer: sweetAlert.footer != undefined ? sweetAlert.footer : '<a href="https://coroo.github.io/nova-chartjs/" target="_blank" style="text-decoration:none; color:#777; font-size:14px">Nova Chart JS © ' + new Date().getFullYear() + '</a>',
+                            ...sweetAlert
+                          }).then((result) => {
+                            if (result.value) {
+                              window.location = toLink;
+                            }
+                          })}
+                      };
+                    };
+                    // END == SETUP POPUP
+
+                  })
+                  .catch(({ response }) => {
+                    this.$set(this, "errors", response.data.errors)
+                  })
         }
       },
     },
