@@ -94,7 +94,10 @@
         'card'
     ],
     created(){
-      Nova.$on("action-executed", () => this.$forceUpdate());
+      Nova.$on("action-executed", function(){
+        this.$forceUpdate();
+        console.log('even triggered');
+      });
     },
     mounted () {
       this.fillData();
