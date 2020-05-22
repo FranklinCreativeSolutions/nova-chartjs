@@ -95,7 +95,7 @@
     ],
     mounted () {
       this.fillData();
-      Nova.$on("change", () => this.$forceUpdate());
+      Nova.$on("change", this.$forceUpdate());
     },
     methods: {
       reloadPage(){
