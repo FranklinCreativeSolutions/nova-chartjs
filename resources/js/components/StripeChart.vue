@@ -93,9 +93,11 @@
     props: [
         'card'
     ],
+    created(){
+      Nova.$on("action-executed", () => this.$forceUpdate());
+    },
     mounted () {
       this.fillData();
-      Nova.$on("change", this.$forceUpdate());
     },
     methods: {
       reloadPage(){
