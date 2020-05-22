@@ -94,13 +94,13 @@
         'card'
     ],
     created(){
-      Nova.$on("action-executed", function(){
-        this.$forceUpdate();
+      Nova.$on("resources-loaded", function(){
+        this.fillData();
         console.log('even triggered');
       });
     },
     mounted () {
-      this.fillData();
+      //this.fillData();
     },
     methods: {
       reloadPage(){
@@ -166,6 +166,7 @@
         }
 
         if(this.card.model == 'custom' || this.card.model == undefined){
+          console.log('custom');
         // Custom Data
           this.title = this.card.title,
           this.datacollection = {
@@ -178,6 +179,7 @@
           if(sweetAlertWithLink != undefined) {
             this.options.onClick = function (event) {
               let element = this.getElementAtEvent(event);
+              console.log(element);
               if (element.length > 0) {
                 console.log(element[0]._model);
               var series= element[0]._model.datasetLabel;
@@ -211,7 +213,7 @@
 
         } else {
           if(this.showAdvanceFilter == true) this.card.options.advanceFilterSelected = this.advanceFilterSelected != undefined ? this.advanceFilterSelected : false;
-
+          console.log('model');
           // Use Model
           Nova.request().get("/coroowicaksono/check-data/endpoint/", {
             params: {
