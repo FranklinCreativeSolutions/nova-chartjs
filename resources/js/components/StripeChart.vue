@@ -94,10 +94,7 @@
       'card'
     ],
     created(){
-      var self = this;
-      Nova.$on("resources-loaded", function(){
-        self.fillData();
-      });
+      Nova.$on("resources-loaded", this.fillData());
     },
     mounted () {
       //this.fillData();
