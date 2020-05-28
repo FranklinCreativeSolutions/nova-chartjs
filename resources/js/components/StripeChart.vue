@@ -97,7 +97,7 @@
       Nova.$on("resources-loaded", () => this.fillData());
     },
     mounted () {
-      //this.fillData();
+      this.fillData();
     },
     methods: {
       reloadPage(){
