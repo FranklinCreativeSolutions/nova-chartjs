@@ -165,7 +165,9 @@
         if(this.card.model == 'custom' || this.card.model == undefined){
           // Custom Data
           this.title = this.card.title;
-          let url = '/nova-api/'+this.card.options.path+'/cards?path='+encodeURI(window.location.href).replace('&','%26');
+          let filters = getQueryParams('*_filter',window.location.href);
+          let id = getResourceId(window.location.href);
+          let url = '/nova-api/'+this.card.options.path+'/cards?viaResourceId='+id+'&filters='+filters;
           fetch(url)
                   .then(res => res.json())
                   .then(res => {
