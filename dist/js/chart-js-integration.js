@@ -1973,19 +1973,21 @@ function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) r
   },
   props: ['card'],
   created: function created() {
+    var _this = this;
+
     Nova.$on("resources-loaded", function () {
-      this.fillData();
-      console.log('even triggered');
+      return _this.fillData();
     });
   },
-  mounted: function mounted() {//this.fillData();
+  mounted: function mounted() {
+    this.fillData();
   },
   methods: {
     reloadPage: function reloadPage() {
       window.location.reload();
     },
     fillData: function fillData() {
-      var _this = this;
+      var _this2 = this;
 
       this.options = {
         layout: this.chartLayout,
@@ -2051,19 +2053,25 @@ function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) r
       }
 
       if (this.card.model == 'custom' || this.card.model == undefined) {
-        console.log('custom'); // Custom Data
-
-        this.title = this.card.title, this.datacollection = {
-          labels: this.card.options.xaxis.categories,
-          datasets: this.card.series
-        }; // START == SETUP POPUP
+        // Custom Data
+        this.title = this.card.title;
+        var filters = getQueryParams('*_filter', window.location.href);
+        var id = getResourceId(window.location.href);
+        var url = '/nova-api/' + this.card.options.path + '/cards?viaResourceId=' + id + '&filters=' + filters;
+        fetch(url).then(function (res) {
+          return res.json();
+        }).then(function (res) {
+          _this2.datacollection = {
+            labels: res[0].options.xaxis.categories,
+            datasets: res[0].series
+          };
+        }); // START == SETUP POPUP
 
         var sweetAlertWithLink = this.sweetAlert;
 
         if (sweetAlertWithLink != undefined) {
           this.options.onClick = function (event) {
             var element = this.getElementAtEvent(event);
-            console.log(element);
 
             if (element.length > 0) {
               console.log(element[0]._model);
@@ -2099,8 +2107,7 @@ function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) r
 
         ; // END == SETUP POPUP
       } else {
-        if (this.showAdvanceFilter == true) this.card.options.advanceFilterSelected = this.advanceFilterSelected != undefined ? this.advanceFilterSelected : false;
-        console.log('model'); // Use Model
+        if (this.showAdvanceFilter == true) this.card.options.advanceFilterSelected = this.advanceFilterSelected != undefined ? this.advanceFilterSelected : false; // Use Model
 
         Nova.request().get("/coroowicaksono/check-data/endpoint/", {
           params: {
@@ -2112,15 +2119,15 @@ function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) r
           }
         }).then(function (_ref) {
           var data = _ref.data;
-          _this.datacollection = {
+          _this2.datacollection = {
             labels: data.dataset.xAxis,
             datasets: data.dataset.yAxis
           }; // START == SETUP POPUP
 
-          var sweetAlertWithLink = _this.sweetAlert;
+          var sweetAlertWithLink = _this2.sweetAlert;
 
           if (sweetAlertWithLink != undefined) {
-            _this.options.onClick = function (event) {
+            _this2.options.onClick = function (event) {
               var element = this.getElementAtEvent(event);
               console.log(element[0]);
 
@@ -2159,7 +2166,7 @@ function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) r
         })["catch"](function (_ref2) {
           var response = _ref2.response;
 
-          _this.$set(_this, "errors", response.data.errors);
+          _this2.$set(_this2, "errors", response.data.errors);
         });
       }
     }
@@ -42260,7 +42267,7 @@ __webpack_require__.r(__webpack_exports__);
       required: true
     },
     height: {
-      "default": 120,
+      "default": 380,
       type: Number
     }
   },
