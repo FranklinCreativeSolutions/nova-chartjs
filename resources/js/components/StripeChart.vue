@@ -178,7 +178,7 @@
                   .then(res => res.json())
                   .then(res => {
                     this.datacollection = {
-                      labels: res[0].options.xaxis.categories,
+                      //labels: res[0].options.xaxis.categories,
                       datasets: res[0].series,
                     };
                   });
