@@ -146,7 +146,10 @@
               label: function(tooltipItem, data) {
                 rLabel = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].r;
                 var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
-                return datasetLabel + ' : ' + rLabel + '% har pris på ca. ' + tooltipItem.yLabel + ' kr.';
+                if(typeof rLabel !== "undefined"){
+                  return datasetLabel + ' : ' + rLabel;
+                }
+                return datasetLabel + ' : ' + tooltipItem.yLabel + ' kr.';
               }
             }
           }
