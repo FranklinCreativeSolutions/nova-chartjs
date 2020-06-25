@@ -144,12 +144,13 @@
           tooltips: {
             callbacks: {
               label: function(tooltipItem, data) {
-                rLabel = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].r;
+                console.log(tooltipItem);
+                console.log(data);
                 var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
-                if(typeof rLabel !== "undefined"){
-                  return datasetLabel + ' : ' + rLabel;
+                if(typeof data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].r !== "undefined"){
+                  return datasetLabel + ' : ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].r;
                 }
-                return datasetLabel + ' : ' + tooltipItem.yLabel + ' kr.';
+                return datasetLabel + ' : ' + tooltipItem.yLabel;
               }
             }
           }
