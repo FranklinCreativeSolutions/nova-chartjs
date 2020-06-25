@@ -48,6 +48,7 @@
       return {
         datacollection: {},
         options: {},
+        scales: {},
         buttonRefresh: this.card.options.btnRefresh,
         buttonReload: this.card.options.btnReload,
         btnExtLink: this.card.options.extLink != undefined ? true : false,
@@ -104,10 +105,10 @@
         window.location.reload()
       },
       fillData () {
-        this.options = {
-          layout: this.chartLayout,
-          legend: this.chartLegend,
-          scales: {
+        if(typeof this.card.options.scales !== "undefined")
+          this.scales = this.card.options.scales;
+        else{
+          this.scales = {
             yAxes: [{
               ticks: {
                 maxTicksLimit: 5,
@@ -132,7 +133,12 @@
                 fontSize: 10,
               }
             }]
-          },
+          };
+        }
+        this.options = {
+          layout: this.chartLayout,
+          legend: this.chartLegend,
+          scales: this.scales,
           responsive: true,
           maintainAspectRatio: false,
         };
