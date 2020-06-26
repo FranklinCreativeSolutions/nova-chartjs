@@ -153,8 +153,35 @@
                 return datasetLabel + ' : ' + tooltipItem.yLabel;
               }
             }
+          },
+          legendCallback: function(chart){
+            console.log(chart.data);
+            var text = [];
+            text.push('<ul class="' + chart.id + '-legend">');
+            var data = chart.data;
+            var datasets = data.datasets;
+            var labels = data.labels;
+            if (datasets.length) {
+              for (var i = 0; i < datasets[0].data.length; ++i) {
+                text.push('<li><span style="background-color:' + datasets[0].backgroundColor[i] + '"></span>');
+                if (labels[i]) {
+                  // calculate percentage
+                  var total = datasets[0].data.reduce(function(previousValue, currentValue, currentIndex, array) {
+                    return previousValue + currentValue;
+                  });
+                  var currentValue = datasets[0].data[i];
+                  var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
+
+                  text.push(labels[i] + ' (' + percentage + '%)');
+                }
+                text.push('</li>');
+              }
+            }
+            text.push('</ul>');
+            return text.join('');
           }
         };
+        console.log(this.options);
 
         if(this.chartTooltips !== undefined){
           this.options.tooltips = this.chartTooltips;
@@ -190,8 +217,9 @@
           fetch(url)
                   .then(res => res.json())
                   .then(res => {
+
                     this.datacollection = {
-                      //labels: res[0].options.xaxis.categories,
+                      labels: res[0].options.xaxis.categories,
                       datasets: res[0].series,
                     };
                   });
