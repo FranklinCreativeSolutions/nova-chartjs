@@ -22,8 +22,8 @@ export default {
     }
   },
   mounted () {
-    this.renderChart(this.chartData, this.options)
-    const HTML = this.$data._chart.generateLegend()
+    const chart = this.renderChart(this.chartData, this.options)
+    const HTML = chart.generateLegend()
     this.$emit('generated', HTML)
   },
   watch: {
